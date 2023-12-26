@@ -19,7 +19,7 @@ CartRouter.get('/:id', async(req, res)=>{
 CartRouter.post('/:cid/products/:pid', async(req, res)=>{
     let cartId = req.params.cid
     let productId = req.params.pid
-    res.send(await cart.addProdInCart(cartId, productId))
+    res.send(await cart.addProductInCart(cartId, productId))
 })
 
 

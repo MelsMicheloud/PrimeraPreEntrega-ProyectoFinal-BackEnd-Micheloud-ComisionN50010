@@ -32,27 +32,35 @@ class CartManager {
     }
 
     getCartById = async (id) =>{
-        let cartById = await this.existCart(id)
+        let cartById = await this.exist(id)
         if (!cartById) return "Carrito No Encontrado"
         return cartById
     }
 
-    addProdInCart = async (cartId, productId) => {
+    addProductInCart = async (cartId, productId) => {
         let cartById = await this.exist(cartId)
         if(!cartById) return "Carrito No encontrado"
         let productById = await productAll.exist(productId)
         if(!productById) return "Producto No encontrado"
 
-        if(cartById.products.some(prod = prod.id === productId)){
-            let productInCart = cartById.products.find(prod = prod.id === productId)
-            productInCart.quantity++
+        let cartsAll = await this.readCart()
+        let cartFilter = cartsAll.filter((cart) => cart.id != cartId);
+
+        if(cartById.products.some((prod) => prod.id === productId)){
+            let moreproductInCart = cartById.products.find(
+                (prod) => prod.id === productId
+            );
+            moreproductInCart.quantity ++;
+            console.log(moreproductInCart.quantity);
+
+            let cartsConcat = [cartById, ...cartFilter];
+            await this.writeCart(cartsConcat);
+            return "Producto sumado al Carrito";
         }
 
-        let cartsAll = await this.readCart()
+        cartById.products.push({id:productById.id, quantity: 1})
 
-        let cartFilter = cartsAll.filter(prod => prod.id != id)
-
-        let cartsConcat = [{id : cartId, products : [{id:productById.id, quantity: 1}]}, ...cartFilter]
+        let cartsConcat = [cartById, ...cartFilter];
         await this.writeCart(cartsConcat)
         return "Producto agregado al carrito"
     }
