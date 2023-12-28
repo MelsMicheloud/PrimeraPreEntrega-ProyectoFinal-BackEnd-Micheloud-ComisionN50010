@@ -8,8 +8,13 @@ const product = new ProductManager
 
 //consultamos todos los prod
 ProductRouter.get("/", async(req, res) =>{
-    res.send(await product.getProducts())
+    let limit = parseInt(req.query.limit);
+    if(!limit) return res.send(await product.readProducts())
+    let allProd = await product.readProducts()
+    let productLimit = allProd.slice(0, limit)
+    res.send(productLimit)
 })
+
 //consultamos por id
 ProductRouter.get("/:id", async(req, res) =>{
     let id = req.params.id
@@ -26,6 +31,7 @@ ProductRouter.delete("/:id", async (req, res)=>{
     let id = req.params.id
     res.send(await product.deleteProducts(id));
 })
+
 
 //actualizar
 ProductRouter.put("/:id", async (req,res)=> {
